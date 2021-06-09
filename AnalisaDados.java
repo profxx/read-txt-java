@@ -26,7 +26,7 @@ public class AnalisaDados {
 		// More medals - athletes
 		List<String> atletasMedal = new ArrayList<>();
 		String atletaMaisMedals = new String();
-		List<String> listaAtletasMaisMedals = new ArrayList<>();
+		List<Atleta> listaAtletasMaisMedals = new ArrayList<>();
 		// Total time Athletes
 		List<Atleta> atl = new ArrayList<>();
 		
@@ -71,9 +71,24 @@ public class AnalisaDados {
 				atletasOuro.add(ganhouOuro);
 				
 				//List with athletes in medals
-				atletasMedal.add(ganhouOuro);
-				atletasMedal.add(ganhouPrata);
-				atletasMedal.add(ganhouBronze);
+				if (modalidade.contains("4x")) { // Treat names with "/"
+					String[] ouro = ganhouOuro.split("/");
+					String[] prata = ganhouPrata.split("/");
+					String[] bronze = ganhouBronze.split("/");
+					for (String i : ouro) {
+						atletasMedal.add(i);
+					}
+					for (String i : prata) {
+						atletasMedal.add(i);
+					}
+					for (String i: bronze) {
+						atletasMedal.add(i);
+					}
+				}else {
+					atletasMedal.add(ganhouOuro);
+					atletasMedal.add(ganhouPrata);
+					atletasMedal.add(ganhouBronze);
+				}
 				
 				// Go to the next line to reloop until there's one left.
 				line = br.readLine();	
@@ -133,24 +148,42 @@ public class AnalisaDados {
 			System.out.println("\nAtleta(s) com mais ouros:\n"+atletaMaisOuros);
 //----------------------------------------------------------------//
 			// Athlete with the biggest number of medals
-			int contAth1 = 0; 				// Define a counter
-			for (String p : atletasMedal) { 	// Loop for 
-				int afrequencia1 = Collections.frequency(atletasMedal, p);
+			int contAth1 = 0; // Define a counter
+			int medals = 0;
+			for (String p : atletasMedal) { 	// Loop for each athlete in atletasMedal
+				int afrequencia1 = Collections.frequency(atletasMedal, p); // Number the frequency of each to a variable
 				if (afrequencia1 > contAth1) {
 					contAth1 = afrequencia1;
 					atletaMaisMedals = p;
+					medals = afrequencia1;
 				}//if
 			}//for
+			Atleta atMeds = new Atleta();
+			atMeds.setTotMedals(medals);
+			atMeds.setAtleta(atletaMaisMedals);
+			listaAtletasMaisMedals.add(atMeds);
+			atletasMedal.remove(atletaMaisMedals);
 			System.out.println("\nAtleta(s) com mais medalhas:");
+
 			for (String p : atletasMedal) {		// Check for athletes with same number of medals
 				int atletafrequencia1 = Collections.frequency(atletasMedal, p);
-				if ((atletafrequencia1 >= contAth1) && (!listaAtletasMaisMedals.contains(p))) {
-					listaAtletasMaisMedals.add(p);
+				if (atletafrequencia1 == medals) {
+					Atleta mesmoNumero = new Atleta();
+					mesmoNumero.setAtleta(p);
+					mesmoNumero.setTotMedals(atletafrequencia1);
+					if (listaAtletasMaisMedals.contains(mesmoNumero)) {
+						// Don't add repeated elements: DIDN'T WORK
+					}else {
+						listaAtletasMaisMedals.add(mesmoNumero);
+					}
 				}//if
 			}//for
-			for (String i : listaAtletasMaisMedals) {
-				System.out.println(i);
+
+			// Print
+			for (Atleta j : listaAtletasMaisMedals) {
+				System.out.println(j.getAtleta() + " com " + j.getTotMedals() + " medalhas.");
 			}//for
+
 //----------------------------------------------------------------//
 			//Treating the time format numbers
 			for (Estatisticas i : est) {
@@ -209,4 +242,6 @@ public class AnalisaDados {
 		}	
 	}
 }
+
+
 
